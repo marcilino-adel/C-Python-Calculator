@@ -1,0 +1,21 @@
+# Build configuration
+cc = C:/Program Files/JetBrains/CLion 2025.1/bin/mingw/bin/gcc.exe
+cflags = -I$python_include -fPIC
+ldflags = -shared
+python_include = $$(venv\Scripts\python.exe -c "import sysconfig; print(sysconfig.get_path('include'))")
+
+# Rules
+rule compile
+  command = $cc $cflags -c $in -o $out
+rule link
+  command = $cc $ldflags -o $out $in
+rule pytest
+  command = venv\Scripts\pytest.exe tests/test_python.py
+rule clean
+  command = del $out
+
+# Build steps
+build src/c/calc.o: compile src/c/calculator.c
+build src/python/calc.pyd: link src/c/calc.o
+build test: pytest
+build clean: clean src\python\calc.pyd src\c\calc.o

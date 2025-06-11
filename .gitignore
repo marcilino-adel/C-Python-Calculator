@@ -50,3 +50,33 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+
+
+# C
+build/
+*.o
+*.so
+*.out
+
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# CLion
+.idea/
+cmake-build-*/
+
+# PyCharm
+.idea/
+__pycache__/
+*.py[cod]
+*$py.class
+.vscode/
+
+
+# System
+.DS_Store
+
