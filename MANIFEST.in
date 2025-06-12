@@ -1,0 +1,4 @@
+include src/c/calculator.c
+include src/c/calculator.h
+recursive-include src/python *.py
+include calculator.pyd  # Include the pre-built .pyd
