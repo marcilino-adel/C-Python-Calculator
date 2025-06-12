@@ -1,21 +1,50 @@
-# Build configuration
-cc = C:/Program Files/JetBrains/CLion 2025.1/bin/mingw/bin/gcc.exe
-cflags = -I$python_include -fPIC
-ldflags = -shared
-python_include = $$(venv\Scripts\python.exe -c "import sysconfig; print(sysconfig.get_path('include'))")
+# Build configuration for C-Python Calculator
+cc = "C:/Program Files/JetBrains/CLion 2025.1/bin/mingw/bin/gcc.exe"
+python_exe = venv/Scripts/python.exe
+
+# Static Python paths (edit these if you change Python version)
+python_include = C:/Users/Marcilino/AppData/Local/Programs/Python/Python310/include
+python_libs = -LC:/Users/Marcilino/AppData/Local/Programs/Python/Python310/libs -lpython310
+
 
 # Rules
-rule compile
-  command = $cc $cflags -c $in -o $out
-rule link
-  command = $cc $ldflags -o $out $in
-rule pytest
-  command = venv\Scripts\pytest.exe tests/test_python.py
-rule clean
-  command = del $out
+rule compile_c
+  command = $cc -Wall -Wextra -fPIC -I$python_include -c $in -o $out
+  description = Compiling C source $in
 
-# Build steps
-build src/c/calc.o: compile src/c/calculator.c
-build src/python/calc.pyd: link src/c/calc.o
-build test: pytest
-build clean: clean src\python\calc.pyd src\c\calc.o
+rule link_extension
+  command = $cc -shared -o $out $in $python_libs
+  description = Linking Python extension $out
+
+rule compile_test
+  command = $cc -Wall -Wextra -I./src/c -o $out $in
+  description = Compiling C test $in
+
+rule run_c_test
+  command = $out
+  description = Running C test binary $out
+
+rule run_python_test
+  command = $python_exe -m pytest $in -v
+  description = Running Python tests $in
+
+rule clean_rule
+  command = cmd /c "if exist src\\c\\*.o del src\\c\\*.o & if exist *.pyd del *.pyd & if exist tests\\test_calculator.exe del tests\\test_calculator.exe"
+  description = Cleaning build artifacts
+
+# Build targets
+build src/c/calculator.o: compile_c src/c/calculator.c
+build calculator.pyd: link_extension src/c/calculator.o
+
+build tests/test_calculator.exe: compile_test tests/test_calculator.c src/c/calculator.c
+build run_c_test: run_c_test tests/test_calculator.exe
+
+build test_python: run_python_test tests/test_calculator.py
+
+# Phony targets
+build build: phony calculator.pyd
+build test: phony run_c_test test_python
+build clean: clean_rule
+
+# Optional: Run build and tests by default
+default build test
