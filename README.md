@@ -1,13 +1,4 @@
-# C-Python-Calculator
-Command-line calculator with C backend and Python interface
 
-# C-Python-Calculator
-Command-line calculator with C backend and Python interface
-
-
-### Complete `README.md`
-
-```markdown
 # C-Python Calculator
 
 A command-line calculator with core arithmetic logic implemented in C and exposed through a Python interface. This project demonstrates the integration of C extensions with Python, packaged as a distributable Python module.
